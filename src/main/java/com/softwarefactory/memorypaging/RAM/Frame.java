@@ -1,4 +1,4 @@
-package com.softwarefactory.memorypaging.LRU;
+package com.softwarefactory.memorypaging.RAM;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,6 +9,11 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class LRUAlgorithm {
-    int id;
+public class Frame {
+    
+    protected int id;
+    protected Integer pageId;
+
 }
+
+

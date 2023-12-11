@@ -9,8 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-// classe que representa uma moldura na RAM.
-public class PageFrame {
+public class Page {
     
     int id;
        
