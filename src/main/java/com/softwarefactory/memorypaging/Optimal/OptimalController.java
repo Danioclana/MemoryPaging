@@ -1,5 +1,10 @@
 package com.softwarefactory.memorypaging.Optimal;
 
-public class OptimalController {
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/optimal")
+public class OptimalController<T> {
     
 }
