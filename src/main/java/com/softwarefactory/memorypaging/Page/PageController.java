@@ -27,8 +27,8 @@ public class PageController {
 
             Page newPage = new Page();
             newPage.setId(pages.size() + 1);
-            newPage.setAge(0);
-            newPage.setTimeLastUsed(0);
+            newPage.setAge(-1);
+            newPage.setTimeLastUsed(-1);
 
             pages.add(newPage);
         }
@@ -41,8 +41,8 @@ public class PageController {
 
         Page page = new Page();
         page.setId(pages.size() + 1);
-        page.setAge(0);
-        page.setTimeLastUsed(0);
+        page.setAge(-1);
+        page.setTimeLastUsed(-1);
         pages.add(page);
 
         return ResponseEntity.status(200).body("Page " + pages.size() + " created successfully");

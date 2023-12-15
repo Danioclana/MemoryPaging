@@ -16,8 +16,6 @@ import com.softwarefactory.memorypaging.RAM.FrameController;
 @RestController
 @RequestMapping("/fifo")
 public class FIFOAlgorithm {
-        int time;
-
         FrameController frameController = new FrameController();
         PageController pageController = new PageController();
 
@@ -27,15 +25,24 @@ public class FIFOAlgorithm {
         @PostMapping("/init")
         public ResponseEntity<?> FIFO_init() {
             frames = frameController.getFrames();
+            if (frames.size() == 0) {
+                return ResponseEntity.status(404).body("RAM not found");
+            }
             pages = pageController.getPages();
-            this.time = -1;
+            if (pages.size() == 0) {
+                return ResponseEntity.status(404).body("Pages not found");
+            }
 
             return ResponseEntity.status(200).body("FIFO algorithm init successfully");
         }
 
         @PostMapping("/acessPage")
         public ResponseEntity<?> FIFO_acessPage(int pageId) {
-            this.time++;
+            
+            //incrementa o tempo de vida de todas as páginas
+            for (Frame frame : frames) {
+                frame.getPage().setAge( frame.getPage().getAge() + 1 );
+            }
 
             Page page = pageController.findPage(pageId);
 
@@ -53,10 +60,6 @@ public class FIFOAlgorithm {
             frames.sort((frame1, frame2) -> frame1.getPage().getAge() - frame2.getPage().getAge());
 
             frames.get(0).setPage(page);
-
-            for (Frame frame : frames) {
-                frame.getPage().setAge( frame.getPage().getAge() + 1 );
-            }
 
             return ResponseEntity.status(200).body("Page " + pageId + " accessed successfully");
         }
