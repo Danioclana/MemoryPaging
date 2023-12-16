@@ -7,7 +7,7 @@
 - **Maven:** Certifique-se de ter o Maven instalado. [Baixe aqui](https://maven.apache.org/download.cgi).
 
 ## Backend (Spring Boot)
-1. Clone o repositório memorypaging.
+1. Clone o repositório MemoryPaging.
 2. Navegue até o diretório.
 3. Compile o projeto Spring Boot usando Maven: `mvn install`
 4. Execute o projeto Spring Boot: `mvn spring-boot:run`
