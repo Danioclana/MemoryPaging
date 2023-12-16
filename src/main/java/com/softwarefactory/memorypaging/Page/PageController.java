@@ -18,24 +18,7 @@ import lombok.Setter;
 @RequestMapping("/page")
 public class PageController {
 
-    ArrayList<Page> pages = new ArrayList<Page>();
-
-
-    @PostMapping("/createAll")
-    public ResponseEntity<?> createPagesRandom(@RequestBody int numberOfPages) {
-
-        for (int i = 0; i < numberOfPages; i++) {
-
-            Page page = new Page();
-            page.setId(pages.size() + 1);
-            page.setAge(-1);
-            page.setTimeLastUsed(-1);
-            page.setPageRequests(0);
-            pages.add(page);
-        }
-
-        return ResponseEntity.status(200).body(pages.size() + " pages created successfully");
-    }
+    public static ArrayList<Page> pages = new ArrayList<Page>();
 
     @PostMapping("/create")
     public ResponseEntity<?> createPage() {
@@ -50,25 +33,30 @@ public class PageController {
         return ResponseEntity.status(200).body("Page " + pages.size() + " created successfully");
     }
 
-    @PostMapping("/delete")
-    public ResponseEntity<?> deletePage(@RequestBody int id) {
+    @PostMapping("/createAll")
+    public ResponseEntity<?> createPagesRandom(@RequestBody int numberOfPages) {
+        
+        pages.clear();
 
-        for (Page page : pages) {
-            if (page.getId() == id) {
-                pages.remove(page);
-                break;
-            }
+        for (int i = 0; i < numberOfPages; i++) {
+
+            Page page = new Page();
+            page.setId(pages.size() + 1);
+            page.setAge(-1);
+            page.setTimeLastUsed(-1);
+            page.setPageRequests(0);
+            pages.add(page);
         }
 
-        return ResponseEntity.status(200).body("Page" + id + " deleted successfully");
+        return ResponseEntity.status(200).body(pages.size() + " pages created successfully");
     }
 
-    @PostMapping("/deleteLast")
-    public ResponseEntity<?> deleteLastPage() {
+    @PostMapping("/delete")
+    public ResponseEntity<?> deletePage() {
+        
+        pages.remove(pages.size() - 1);
 
-        pages.remove(pages.size());
-
-        return ResponseEntity.status(200).body("Page" + pages.size() + " deleted successfully");
+        return ResponseEntity.status(200).body("Page" + " deleted successfully");
     }
 
     @GetMapping("/deleteAll")
@@ -79,7 +67,7 @@ public class PageController {
         return ResponseEntity.status(200).body("Page deleted successfully");
     }
 
-    public Page findPage(int id) {
+    public Page isExists(int id) {
         for (Page page : pages) {
             if (page.getId() == id) {
                 return page;

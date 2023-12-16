@@ -19,7 +19,7 @@ import lombok.Setter;
 @RequestMapping("/frame")
 public class FrameController {
 
-    ArrayList<Frame> frames = new ArrayList<Frame>();
+    public static ArrayList<Frame> frames = new ArrayList<Frame>();
 
     @PostMapping("/create")
     public ResponseEntity<?> createFrame() {
@@ -34,12 +34,13 @@ public class FrameController {
 
     @PostMapping("/createAll")
     public ResponseEntity<?> createFrames(@RequestBody int numberOfFrames) {
+        
+        frames.clear();
 
-        for (Frame frame : frames) {
-            frame = new Frame();
+        for (int i = 0; i < numberOfFrames; i++) {
+            Frame frame = new Frame();
             frame.setId(frames.size() + 1);
             frame.setPage(null);
-
             frames.add(frame);
         }
 
@@ -61,7 +62,7 @@ public class FrameController {
     @PostMapping("/delete")
     public ResponseEntity<?> deleteFrame() {
 
-        frames.remove(frames.size());
+        frames.remove(frames.size() - 1);
 
         return ResponseEntity.status(200).body("Frame" + frames.size() + "deleted successfully");
     }
@@ -72,6 +73,15 @@ public class FrameController {
         frames.clear();
 
         return ResponseEntity.status(200).body("All frames deleted successfully");
+    }
+
+    public int findPage(int id) {
+        for (Frame frame : frames) {
+            if (frame.getPage().getId() == id) {
+                return frame.getId();
+            }
+        }
+        return -1;
     }
 
 }

@@ -18,7 +18,8 @@ import com.softwarefactory.memorypaging.RAM.FrameController;
 @RequestMapping("/lru")
 public class LRUAlgorithm {
         int time;
-        int pageFaults;
+        int contPageFaults;
+        boolean pageFaultHitoric;
 
 
         FrameController frameController = new FrameController();
@@ -29,15 +30,17 @@ public class LRUAlgorithm {
 
         @PostMapping("/init")
         public ResponseEntity<?> LRU_init() {
-            frames = frameController.getFrames();
+            frames.addAll(FrameController.frames);
             if (frames.size() == 0) {
                 return ResponseEntity.status(404).body("RAM not found");
             }
-            pages = pageController.getPages();
+            pages.addAll(PageController.pages);
             if (pages.size() == 0) {
                 return ResponseEntity.status(404).body("Pages not found");
             }
-            this.time = -1;
+
+            time = 0;
+            contPageFaults = 0;
 
             return ResponseEntity.status(200).body("LRU algorithm init successfully");
         }
@@ -47,16 +50,24 @@ public class LRUAlgorithm {
 
             time++;
 
-            Page page = pageController.findPage(pageId);
+            Page page = pageController.isExists(pageId);
 
             if(page == null) {
                 return ResponseEntity.status(404).body("Page " + pageId + " not found");
+            }
+
+            if(frameController.findPage(pageId) != -1) {
+                this.pageFaultHitoric = false;
+                return ResponseEntity.status(200).body("Page " + pageId + " already loaded in frame " + frameController.findPage(pageId));
             }
 
             for (Frame frame : frames) {
                 if (frame.getPage() == null) {
                     page.setTimeLastUsed(time);
                     frame.setPage(page);
+
+                    this.contPageFaults++;
+                    this.pageFaultHitoric = true;
                     
                     return ResponseEntity.status(200).body("Page " + pageId + " loaded successfully in frame " + frame.getId());
                 }
@@ -64,7 +75,8 @@ public class LRUAlgorithm {
 
             frames.sort((frame1, frame2) -> frame2.getPage().getTimeLastUsed() - frame1.getPage().getTimeLastUsed());
             page.setTimeLastUsed(time);
-            this.pageFaults++;
+            this.contPageFaults++;
+            this.pageFaultHitoric = true;
 
             frames.get(0).setPage(page);
 
@@ -75,6 +87,20 @@ public class LRUAlgorithm {
         public ResponseEntity<?> LRU_getArrayFrames() {
             
             return ResponseEntity.status(200).body(frames);
+
+        }
+
+        @GetMapping ("/getFaultHistoric")
+        public ResponseEntity<?> LRU_getFaultHistoric() {
+            
+            return ResponseEntity.status(200).body(this.pageFaultHitoric);
+
+        }
+
+        @GetMapping ("/getContPageFaults")
+        public ResponseEntity<?> LRU_getContPageFaults() {
+            
+            return ResponseEntity.status(200).body(this.contPageFaults);
 
         }
 }

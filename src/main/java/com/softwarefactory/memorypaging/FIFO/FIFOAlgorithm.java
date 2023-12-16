@@ -17,7 +17,8 @@ import com.softwarefactory.memorypaging.RAM.FrameController;
 @RestController
 @RequestMapping("/fifo")
 public class FIFOAlgorithm {
-        int pageFaults;
+        int contPageFaults;
+        boolean pageFaultHistoric;
 
         FrameController frameController = new FrameController();
         PageController pageController = new PageController();
@@ -27,14 +28,17 @@ public class FIFOAlgorithm {
 
         @PostMapping("/init")
         public ResponseEntity<?> FIFO_init() {
-            frames = frameController.getFrames();
+
+            frames.addAll(FrameController.frames);
             if (frames.size() == 0) {
                 return ResponseEntity.status(404).body("RAM not found");
             }
-            pages = pageController.getPages();
+            pages.addAll(PageController.pages);
             if (pages.size() == 0) {
                 return ResponseEntity.status(404).body("Pages not found");
             }
+
+            contPageFaults = 0;
 
             return ResponseEntity.status(200).body("FIFO algorithm init successfully");
         }
@@ -47,23 +51,31 @@ public class FIFOAlgorithm {
                 frame.getPage().setAge( frame.getPage().getAge() + 1 );
             }
 
-            Page page = pageController.findPage(pageId);
+            Page page = pageController.isExists(pageId);
 
             if(page == null) {
                 return ResponseEntity.status(404).body("Page " + pageId + " not found");
             }
 
+            if(frameController.findPage(pageId) != -1) {
+                this.pageFaultHistoric = false;
+                return ResponseEntity.status(200).body("Page " + pageId + " already loaded in frame " + frameController.findPage(pageId));
+            }
+
             for (Frame frame : frames) {
                 if (frame.getPage() == null) {
                     frame.setPage(page);
+                    this.contPageFaults++;
+                    this.pageFaultHistoric = true;
                     return ResponseEntity.status(200).body("Page " + pageId + " loaded successfully in frame " + frame.getId());
                 }
             }
 
-            frames.sort((frame1, frame2) -> frame1.getPage().getAge() - frame2.getPage().getAge());
-            this.pageFaults++;
+            this.frames.sort((frame1, frame2) -> frame1.getPage().getAge() - frame2.getPage().getAge());
+            this.contPageFaults++;  
+            this.pageFaultHistoric = true;
             
-            frames.get(0).setPage(page);
+            this.frames.get(0).setPage(page);
 
             return ResponseEntity.status(200).body("Page " + pageId + " accessed successfully in frame " + frames.get(0).getId());
         }
@@ -72,6 +84,20 @@ public class FIFOAlgorithm {
         public ResponseEntity<?> FIFO_getArrayFrames() {
             
             return ResponseEntity.status(200).body(frames);
+
+        }
+
+        @GetMapping ("/getFaultHistoric")
+        public ResponseEntity<?> FIFO_getFaultHistoric() {
+            
+            return ResponseEntity.status(200).body(this.pageFaultHistoric);
+
+        }
+
+        @GetMapping ("/getContPageFaults")
+        public ResponseEntity<?> LRU_getContPageFaults() {
+            
+            return ResponseEntity.status(200).body(this.contPageFaults);
 
         }
     }
