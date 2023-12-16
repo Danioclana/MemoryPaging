@@ -74,11 +74,18 @@ public class FIFOAlgorithm {
             }
         }
 
-        this.frames.sort((frame1, frame2) -> frame1.getPage().getAge() - frame2.getPage().getAge());
+        Page pageToRemove = frames.get(0).getPage();
+
+        for (int i = 0; i < frames.size(); i++) {
+            if (frames.get(i).getPage().getAge() > pageToRemove.getAge()) {
+                pageToRemove = frames.get(i).getPage();
+            }
+        }
+
         this.contPageFaults++;
         this.pageFaultHistoric = true;
 
-        this.frames.get(0).setPage(page);
+        this.frames.get((pageToRemove.getId() - 1)).setPage(page);
 
         return ResponseEntity.status(200)
                 .body("Page " + pageId + " accessed successfully in frame " + frames.get(0).getId());
