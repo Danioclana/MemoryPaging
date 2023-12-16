@@ -3,7 +3,7 @@ package com.softwarefactory.memorypaging.Page;
 import java.util.ArrayList;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,9 +19,8 @@ public class PageController {
 
     ArrayList<Page> pages = new ArrayList<Page>();
 
-
     @PostMapping("/createAll")
-    public ResponseEntity<?> createPagesRandom (@PathVariable int numberOfPages) {
+    public ResponseEntity<?> createPagesRandom(@RequestBody int numberOfPages) {
 
         for (int i = 0; i < numberOfPages; i++) {
 
@@ -37,7 +36,7 @@ public class PageController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> createPage () {
+    public ResponseEntity<?> createPage() {
 
         Page page = new Page();
         page.setId(pages.size() + 1);
@@ -50,8 +49,8 @@ public class PageController {
     }
 
     @PostMapping("/delete")
-    public ResponseEntity<?> deletePage(@PathVariable int id) {
-        
+    public ResponseEntity<?> deletePage(@RequestBody int id) {
+
         for (Page page : pages) {
             if (page.getId() == id) {
                 pages.remove(page);
@@ -62,9 +61,9 @@ public class PageController {
         return ResponseEntity.status(200).body("Page" + id + " deleted successfully");
     }
 
-     @PostMapping("/deleteLast")
-    public ResponseEntity<?> deleteLastPage () {
-        
+    @PostMapping("/deleteLast")
+    public ResponseEntity<?> deleteLastPage() {
+
         pages.remove(pages.size());
 
         return ResponseEntity.status(200).body("Page" + pages.size() + " deleted successfully");
@@ -72,7 +71,7 @@ public class PageController {
 
     @PostMapping("/deleteAll")
     public ResponseEntity<?> deleteAll() {
-        
+
         pages.clear();
 
         return ResponseEntity.status(200).body("Page deleted successfully");
