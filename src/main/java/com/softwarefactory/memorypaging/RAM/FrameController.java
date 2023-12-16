@@ -34,7 +34,7 @@ public class FrameController {
 
     @PostMapping("/createAll")
     public ResponseEntity<?> createFrames(@RequestBody int numberOfFrames) {
-        
+
         frames.clear();
 
         for (int i = 0; i < numberOfFrames; i++) {
@@ -76,9 +76,16 @@ public class FrameController {
     }
 
     public int findPage(int id) {
+
+        if (frames.size() == 0) {
+            return -1;
+        }
+
         for (Frame frame : frames) {
-            if (frame.getPage().getId() == id) {
-                return frame.getId();
+            if (frame.getPage() != null) {
+                if (frame.getPage().getId() == id) {
+                    return frame.getId();
+                }
             }
         }
         return -1;
