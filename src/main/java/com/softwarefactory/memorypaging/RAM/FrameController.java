@@ -6,8 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.Getter;
@@ -32,8 +32,8 @@ public class FrameController {
         return ResponseEntity.status(201).body("Frame " + frames.size() + " created successfully");
     }
 
-    @GetMapping("/createAll")
-    public ResponseEntity<?> createFrames(@RequestParam(required = false) Integer numberOfFrames) {
+    @PostMapping("/createAll")
+    public ResponseEntity<?> createFrames(@RequestBody int numberOfFrames) {
 
         for (Frame frame : frames) {
             frame = new Frame();
@@ -42,35 +42,35 @@ public class FrameController {
 
             frames.add(frame);
         }
-        
+
         return ResponseEntity.status(201).body(frames.size() + " frames created successfully");
     }
-    
+
     @GetMapping("/getPageId")
     public ResponseEntity<?> getPageId(@PathVariable int id) {
-        
+
         for (Frame frame : frames) {
             if (frame.getId() == id) {
                 return ResponseEntity.status(200).body(frame.getPage().getId());
             }
         }
-        
+
         return ResponseEntity.status(404).body("Frame not found");
     }
 
     @PostMapping("/delete")
     public ResponseEntity<?> deleteFrame() {
-        
+
         frames.remove(frames.size());
-        
-        return ResponseEntity.status(200).body("Frame"+ frames.size() + "deleted successfully");
+
+        return ResponseEntity.status(200).body("Frame" + frames.size() + "deleted successfully");
     }
 
     @GetMapping("/deleteAll")
     public ResponseEntity<?> deleteAllFrames() {
-        
+
         frames.clear();
-        
+
         return ResponseEntity.status(200).body("All frames deleted successfully");
     }
 
