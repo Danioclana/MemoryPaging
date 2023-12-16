@@ -3,6 +3,7 @@ package com.softwarefactory.memorypaging.FIFO;
 import java.util.ArrayList;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +17,8 @@ import com.softwarefactory.memorypaging.RAM.FrameController;
 @RestController
 @RequestMapping("/fifo")
 public class FIFOAlgorithm {
+        int pageFaults;
+
         FrameController frameController = new FrameController();
         PageController pageController = new PageController();
 
@@ -53,14 +56,21 @@ public class FIFOAlgorithm {
             for (Frame frame : frames) {
                 if (frame.getPage() == null) {
                     frame.setPage(page);
-                    return ResponseEntity.status(200).body("Page " + pageId + " accessed successfully");
+                    return ResponseEntity.status(200).body("Page " + pageId + " loaded successfully in frame " + frame.getId() + "");
                 }
             }
 
             frames.sort((frame1, frame2) -> frame1.getPage().getAge() - frame2.getPage().getAge());
-
+            this.pageFaults++;
             frames.get(0).setPage(page);
 
-            return ResponseEntity.status(200).body("Page " + pageId + " accessed successfully");
+            return ResponseEntity.status(200).body("Page " + pageId + " accessed successfully in frame " + frames.get(0).getId() + "");
         }
-}
+
+        @GetMapping ("/getArrayFrames")
+        public ResponseEntity<?> FIFO_getArrayFrames() {
+            
+            return ResponseEntity.status(200).body(frames);
+
+        }
+    }

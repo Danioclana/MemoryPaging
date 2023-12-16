@@ -3,6 +3,7 @@ package com.softwarefactory.memorypaging.Optimal;
 import java.util.ArrayList;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,6 +18,7 @@ import com.softwarefactory.memorypaging.RAM.FrameController;
 @RequestMapping("/optimal")
 public class OptimalAlgorithm {
         int time;
+        int pageFaults;
 
         FrameController frameController = new FrameController();
         PageController pageController = new PageController();
@@ -53,16 +55,27 @@ public class OptimalAlgorithm {
             for (Frame frame : frames) {
                 if (frame.getPage() == null) {
                     page.setTimeLastUsed(time);
+                    page.setPageRequests(page.getPageRequests() + 1);
                     frame.setPage(page);
 
-                    return ResponseEntity.status(200).body("Page " + pageId + " accessed successfully");
+                    return ResponseEntity.status(200).body("Page " + pageId + " loaded successfully");
                 }
             }
 
-            frames.sort((frame1, frame2) -> frame1.getPage().getTimeLastUsed() - frame2.getPage().getTimeLastUsed());
+            frames.sort((frame1, frame2) -> frame1.getPage().getPageRequests() - frame2.getPage().getPageRequests());
             page.setTimeLastUsed(time);
+            page.setPageRequests(page.getPageRequests() + 1);
+            this.pageFaults++;
+
             frames.get(0).setPage(page);
 
             return ResponseEntity.status(200).body("Page " + pageId + " accessed successfully");
+        }
+
+        @GetMapping ("/getArrayFrames")
+        public ResponseEntity<?> FIFO_getArrayFrames() {
+            
+            return ResponseEntity.status(200).body(frames);
+
         }
 }

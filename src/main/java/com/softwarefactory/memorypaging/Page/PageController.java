@@ -20,17 +20,17 @@ public class PageController {
     ArrayList<Page> pages = new ArrayList<Page>();
 
 
-    @PostMapping("/createRandom")
+    @PostMapping("/createAll")
     public ResponseEntity<?> createPagesRandom (@PathVariable int numberOfPages) {
 
         for (int i = 0; i < numberOfPages; i++) {
 
-            Page newPage = new Page();
-            newPage.setId(pages.size() + 1);
-            newPage.setAge(-1);
-            newPage.setTimeLastUsed(-1);
-
-            pages.add(newPage);
+            Page page = new Page();
+            page.setId(pages.size() + 1);
+            page.setAge(-1);
+            page.setTimeLastUsed(-1);
+            page.setPageRequests(0);
+            pages.add(page);
         }
 
         return ResponseEntity.status(200).body(pages.size() + " pages created successfully");
@@ -43,6 +43,7 @@ public class PageController {
         page.setId(pages.size() + 1);
         page.setAge(-1);
         page.setTimeLastUsed(-1);
+        page.setPageRequests(0);
         pages.add(page);
 
         return ResponseEntity.status(200).body("Page " + pages.size() + " created successfully");

@@ -3,6 +3,7 @@ package com.softwarefactory.memorypaging.LRU;
 import java.util.ArrayList;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,6 +18,8 @@ import com.softwarefactory.memorypaging.RAM.FrameController;
 @RequestMapping("/lru")
 public class LRUAlgorithm {
         int time;
+        int pageFaults;
+
 
         FrameController frameController = new FrameController();
         PageController pageController = new PageController();
@@ -55,14 +58,22 @@ public class LRUAlgorithm {
                     page.setTimeLastUsed(time);
                     frame.setPage(page);
                     
-                    return ResponseEntity.status(200).body("Page " + pageId + " accessed successfully");
+                    return ResponseEntity.status(200).body("Page " + pageId + " loaded successfully in frame " + frame.getId() + "");
                 }
             }
 
-            frames.sort((frame1, frame2) -> frame1.getPage().getTimeLastUsed() - frame2.getPage().getTimeLastUsed());
+            frames.sort((frame1, frame2) -> frame2.getPage().getTimeLastUsed() - frame1.getPage().getTimeLastUsed());
             page.setTimeLastUsed(time);
+            this.pageFaults++;
             frames.get(0).setPage(page);
 
-            return ResponseEntity.status(200).body("Page " + pageId + " accessed successfully");
+            return ResponseEntity.status(200).body("Page " + pageId + " accessed successfully in frame " + frames.get(0).getId() + "");
+        }
+
+        @GetMapping ("/getArrayFrames")
+        public ResponseEntity<?> FIFO_getArrayFrames() {
+            
+            return ResponseEntity.status(200).body(frames);
+
         }
 }

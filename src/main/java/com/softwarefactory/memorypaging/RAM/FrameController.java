@@ -3,6 +3,7 @@ package com.softwarefactory.memorypaging.RAM;
 import java.util.ArrayList;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,7 +32,19 @@ public class FrameController {
         }
         
         return ResponseEntity.status(201).body(frames.size() + " frames created successfully");
-    }    
+    }
+    
+    @GetMapping("/getPageId")
+    public ResponseEntity<?> getPageId(@PathVariable int id) {
+        
+        for (Frame frame : frames) {
+            if (frame.getId() == id) {
+                return ResponseEntity.status(200).body(frame.getPage().getId());
+            }
+        }
+        
+        return ResponseEntity.status(404).body("Frame not found");
+    }
 
     @PostMapping("/delete")
     public ResponseEntity<?> deleteFrame() {

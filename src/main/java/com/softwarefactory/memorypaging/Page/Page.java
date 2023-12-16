@@ -15,5 +15,6 @@ public class Page {
 
     protected int age;
     protected int timeLastUsed;
+    protected int pageRequests;
     
 }   
