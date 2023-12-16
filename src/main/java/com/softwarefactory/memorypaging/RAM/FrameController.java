@@ -76,11 +76,6 @@ public class FrameController {
     }
 
     public int findPage(int id) {
-
-        if (frames.size() == 0) {
-            return -1;
-        }
-
         for (Frame frame : frames) {
             if (frame.getPage() != null) {
                 if (frame.getPage().getId() == id) {
@@ -89,6 +84,24 @@ public class FrameController {
             }
         }
         return -1;
+    }
+
+    public int findEmptyFrame() {
+        for (Frame frame : frames) {
+            if (frame.getPage() == null) {
+                return frame.getId();
+            }
+        }
+        return -1;
+    }
+
+    public Frame findFrameById (int id) {
+        for (Frame frame : frames) {
+            if (frame.getId() == id) {
+                return frame;
+            }
+        }
+        return null;
     }
 
 }
