@@ -51,7 +51,7 @@ public class PageController {
         return ResponseEntity.status(200).body(pages.size() + " pages created successfully");
     }
 
-    @PostMapping("/delete")
+    @GetMapping("/delete")
     public ResponseEntity<?> deletePage() {
         
         pages.remove(pages.size() - 1);

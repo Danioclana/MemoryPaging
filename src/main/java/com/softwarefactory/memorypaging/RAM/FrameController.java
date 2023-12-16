@@ -59,7 +59,7 @@ public class FrameController {
         return ResponseEntity.status(404).body("Frame not found");
     }
 
-    @PostMapping("/delete")
+    @GetMapping("/delete")
     public ResponseEntity<?> deleteFrame() {
 
         frames.remove(frames.size() - 1);
