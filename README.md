@@ -1,4 +1,4 @@
-# Seu Projeto
+# MEMORY PAGING
 
 ## Pré-requisitos
 - **Node.js:** Certifique-se de ter o Node.js instalado. [Baixe aqui](https://nodejs.org/).
@@ -7,8 +7,8 @@
 - **Maven:** Certifique-se de ter o Maven instalado. [Baixe aqui](https://maven.apache.org/download.cgi).
 
 ## Backend (Spring Boot)
-1. Clone o repositório do seu projeto.
-2. Navegue até o diretório do backend.
+1. Clone o repositório memorypaging.
+2. Navegue até o diretório.
 3. Compile o projeto Spring Boot usando Maven: `mvn install`
 4. Execute o projeto Spring Boot: `mvn spring-boot:run`
 5. Se tudo estiver correto, você verá mensagens indicando que o servidor Spring Boot está em execução.
