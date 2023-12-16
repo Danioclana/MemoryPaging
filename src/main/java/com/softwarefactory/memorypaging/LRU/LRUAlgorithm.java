@@ -65,14 +65,14 @@ public class LRUAlgorithm {
             frames.sort((frame1, frame2) -> frame2.getPage().getTimeLastUsed() - frame1.getPage().getTimeLastUsed());
             page.setTimeLastUsed(time);
             this.pageFaults++;
-            
+
             frames.get(0).setPage(page);
 
             return ResponseEntity.status(200).body("Page " + pageId + " accessed successfully in frame " + frames.get(0).getId());
         }
 
         @GetMapping ("/getArrayFrames")
-        public ResponseEntity<?> FIFO_getArrayFrames() {
+        public ResponseEntity<?> LRU_getArrayFrames() {
             
             return ResponseEntity.status(200).body(frames);
 
