@@ -73,7 +73,7 @@ public class OptimalAlgorithm {
         }
 
         @GetMapping ("/getArrayFrames")
-        public ResponseEntity<?> FIFO_getArrayFrames() {
+        public ResponseEntity<?> Optimal_getArrayFrames() {
             
             return ResponseEntity.status(200).body(frames);
 
