@@ -21,6 +21,17 @@ public class FrameController {
     ArrayList<Frame> frames = new ArrayList<Frame>();
 
     @PostMapping("/create")
+    public ResponseEntity<?> createFrame() {
+
+        Frame frame = new Frame();
+        frame.setId(frames.size() + 1);
+        frame.setPage(null);
+        frames.add(frame);
+
+        return ResponseEntity.status(201).body("Frame " + frames.size() + " created successfully");
+    }
+
+    @PostMapping("/createAll")
     public ResponseEntity<?> createFrames(@PathVariable int numberOfFrames) {
 
         for (Frame newFrame : frames) {

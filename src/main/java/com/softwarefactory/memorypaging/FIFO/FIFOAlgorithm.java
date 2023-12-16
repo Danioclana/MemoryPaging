@@ -56,15 +56,16 @@ public class FIFOAlgorithm {
             for (Frame frame : frames) {
                 if (frame.getPage() == null) {
                     frame.setPage(page);
-                    return ResponseEntity.status(200).body("Page " + pageId + " loaded successfully in frame " + frame.getId() + "");
+                    return ResponseEntity.status(200).body("Page " + pageId + " loaded successfully in frame " + frame.getId());
                 }
             }
 
             frames.sort((frame1, frame2) -> frame1.getPage().getAge() - frame2.getPage().getAge());
             this.pageFaults++;
+            
             frames.get(0).setPage(page);
 
-            return ResponseEntity.status(200).body("Page " + pageId + " accessed successfully in frame " + frames.get(0).getId() + "");
+            return ResponseEntity.status(200).body("Page " + pageId + " accessed successfully in frame " + frames.get(0).getId());
         }
 
         @GetMapping ("/getArrayFrames")

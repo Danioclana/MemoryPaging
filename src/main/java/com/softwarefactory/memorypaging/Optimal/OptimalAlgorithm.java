@@ -58,7 +58,7 @@ public class OptimalAlgorithm {
                     page.setPageRequests(page.getPageRequests() + 1);
                     frame.setPage(page);
 
-                    return ResponseEntity.status(200).body("Page " + pageId + " loaded successfully");
+                    return ResponseEntity.status(200).body("Page " + pageId + " loaded successfully in frame " + frame.getId());
                 }
             }
 
@@ -69,7 +69,7 @@ public class OptimalAlgorithm {
 
             frames.get(0).setPage(page);
 
-            return ResponseEntity.status(200).body("Page " + pageId + " accessed successfully");
+            return ResponseEntity.status(200).body("Page " + pageId + " accessed successfully in frame " + frames.get(0).getId());
         }
 
         @GetMapping ("/getArrayFrames")

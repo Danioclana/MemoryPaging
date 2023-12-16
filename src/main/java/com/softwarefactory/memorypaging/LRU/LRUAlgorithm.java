@@ -58,16 +58,17 @@ public class LRUAlgorithm {
                     page.setTimeLastUsed(time);
                     frame.setPage(page);
                     
-                    return ResponseEntity.status(200).body("Page " + pageId + " loaded successfully in frame " + frame.getId() + "");
+                    return ResponseEntity.status(200).body("Page " + pageId + " loaded successfully in frame " + frame.getId());
                 }
             }
 
             frames.sort((frame1, frame2) -> frame2.getPage().getTimeLastUsed() - frame1.getPage().getTimeLastUsed());
             page.setTimeLastUsed(time);
             this.pageFaults++;
+            
             frames.get(0).setPage(page);
 
-            return ResponseEntity.status(200).body("Page " + pageId + " accessed successfully in frame " + frames.get(0).getId() + "");
+            return ResponseEntity.status(200).body("Page " + pageId + " accessed successfully in frame " + frames.get(0).getId());
         }
 
         @GetMapping ("/getArrayFrames")
