@@ -3,6 +3,7 @@ package com.softwarefactory.memorypaging.Page;
 import java.util.ArrayList;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -70,7 +71,7 @@ public class PageController {
         return ResponseEntity.status(200).body("Page" + pages.size() + " deleted successfully");
     }
 
-    @PostMapping("/deleteAll")
+    @GetMapping("/deleteAll")
     public ResponseEntity<?> deleteAll() {
         
         pages.clear();

@@ -65,7 +65,7 @@ public class FrameController {
         return ResponseEntity.status(200).body("Frame"+ frames.size() + "deleted successfully");
     }
 
-    @PostMapping("/deleteAll")
+    @GetMapping("/deleteAll")
     public ResponseEntity<?> deleteAllFrames() {
         
         frames.clear();
