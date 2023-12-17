@@ -104,7 +104,7 @@ public class FIFOAlgorithm {
     @PostMapping("/acessPages")
     public ResponseEntity<?> FIFO_acessPages(@RequestBody int[] pagesId) {
 
-        ArrayList<Object[]> response = new ArrayList<>();
+        ArrayList<Object> response = new ArrayList<>();
 
         for (int i = 0; i < pagesId.length; i++) {
             Page page = pageController.isExists(pagesId[i]);
@@ -113,11 +113,17 @@ public class FIFOAlgorithm {
                 System.out.println("Page " + pagesId[i] + " not found");
                 return ResponseEntity.status(404).body("Page " + pagesId[i] + " not found");
             }
-
-            response.add((Object[]) FIFO_acessPage(pagesId[i]));
+            
+            response.add(FIFO_acessPage(pagesId[i]));
         }
 
-        return ResponseEntity.status(200).body(response);
+        Object[] responseArray = new Object[response.size()];
+
+        for(int i = 0; i < response.size(); i++){
+            responseArray[i]=response.get(i);
+        }
+
+        return ResponseEntity.status(200).body(responseArray);
     }
 
     @GetMapping("/getArrayFrames")
