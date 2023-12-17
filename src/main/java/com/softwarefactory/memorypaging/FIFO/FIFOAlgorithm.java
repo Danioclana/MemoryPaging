@@ -57,7 +57,7 @@ public class FIFOAlgorithm {
         if (frameController.findPage(pageId) != -1) {
             this.pageFaultHistoric = false;
             ageIncrement();
-            System.out.println("Page " + pageId + " already loaded in frame " + frameController.findPage(pageId));
+
             return ResponseEntity.status(200)
                     .body(responseConstructor(pageId, frameController.findPage(pageId), pageFaultHistoric,
                             "Page " + pageId + " already loaded in frame " + frameController.findPage(pageId)));
@@ -66,10 +66,12 @@ public class FIFOAlgorithm {
         for (Frame frame : frames) {
             if (frame.getPage() == null) {
                 frame.setPage(page);
+
                 this.contPageFaults++;
                 this.pageFaultHistoric = true;
+
                 ageIncrement();
-                System.out.println("Page " + pageId + " loaded successfully in frame " + frame.getId());
+
                 return ResponseEntity.status(200)
                         .body(responseConstructor(pageId, frame.getId(), pageFaultHistoric,
                                 "Page " + pageId + " loaded successfully in frame " + frame.getId()));
@@ -93,8 +95,6 @@ public class FIFOAlgorithm {
         frame.setPage(page);
 
         ageIncrement();
-
-        System.out.println("Page " + pageId + " accessed successfully in frame " + frame.getId());
     
         return ResponseEntity.status(200)
                 .body(responseConstructor(pageId, pageToRemove.getId(), pageFaultHistoric,
@@ -141,7 +141,7 @@ public class FIFOAlgorithm {
         }
     }
 
-    public static void main(String[] args) {
+/*  public static void main(String[] args) {
         System.out.println("FIFO");
 
         FrameController frame = new FrameController();
@@ -165,7 +165,6 @@ public class FIFOAlgorithm {
         System.out.println(fifo.FIFO_acessPage(4));
 
         System.out.println(fifo.FIFO_acessPage(5));
-
     }
-
+*/
 }
