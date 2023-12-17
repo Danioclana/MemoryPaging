@@ -44,8 +44,7 @@ public class FIFOAlgorithm {
         return ResponseEntity.status(200).body("FIFO algorithm init successfully");
     }
 
-    @PostMapping("/acessPage")
-    public ResponseEntity<?> FIFO_acessPage(@RequestBody int pageId) {
+    public Object FIFO_acessPage( int pageId) {
 
         Page page = pageController.isExists(pageId);
 
@@ -99,6 +98,26 @@ public class FIFOAlgorithm {
         return ResponseEntity.status(200)
                 .body(responseConstructor(pageId, pageToRemove.getId(), pageFaultHistoric,
                         "Page " + pageId + " accessed successfully in frame " + frame.getId()));
+    }
+
+    //acessos multiplos de paginas (array)
+    @PostMapping("/acessPages")
+    public ResponseEntity<?> FIFO_acessPages(@RequestBody int[] pagesId) {
+
+        ArrayList<Object[]> response = new ArrayList<>();
+
+        for (int i = 0; i < pagesId.length; i++) {
+            Page page = pageController.isExists(pagesId[i]);
+
+            if (page == null) {
+                System.out.println("Page " + pagesId[i] + " not found");
+                return ResponseEntity.status(404).body("Page " + pagesId[i] + " not found");
+            }
+
+            response.add((Object[]) FIFO_acessPage(pagesId[i]));
+        }
+
+        return ResponseEntity.status(200).body(response);
     }
 
     @GetMapping("/getArrayFrames")
