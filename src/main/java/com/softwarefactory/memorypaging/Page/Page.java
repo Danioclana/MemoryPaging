@@ -16,5 +16,8 @@ public class Page {
     protected int age;
     protected int timeLastUsed;
     protected int futureAcess;
+    public void setPageRequests(int i) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
 }   
