@@ -21,9 +21,16 @@ public class PageController {
     public static final ArrayList<Page> pages = new ArrayList<>();
 
     @PostMapping("/create")
-    public ResponseEntity<Map<String, String>> createPage() {
-        Page page = createNewPage();
-        return ResponseEntity.status(200).body(createResponse("Page " + pages.size() + " created successfully"));
+    public ResponseEntity<?> createPage() {
+
+        Page page = new Page();
+        page.setId(pages.size() + 1);
+        page.setAge(-1);
+        page.setTimeLastUsed(-1);
+        page.setPageRequests(0);
+        pages.add(page);
+
+        return ResponseEntity.status(200).body("Page " + pages.size() + " created successfully");
     }
 
     @PostMapping("/createAll")
