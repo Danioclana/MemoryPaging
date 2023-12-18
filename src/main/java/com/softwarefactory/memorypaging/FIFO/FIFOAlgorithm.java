@@ -21,6 +21,8 @@ public class FIFOAlgorithm {
     private List<Frame> frames = new ArrayList<>();
     private List<Page> pages = new ArrayList<>();
 
+    private Integer vetFrameId[];
+
     @PostMapping("/acessPages")
     public ResponseEntity<List<Object>> FIFO_acessPages(@RequestBody int[] pagesId) {
         List<Object> response = new ArrayList<>();
@@ -52,6 +54,7 @@ public class FIFOAlgorithm {
     private void FIFO_init() {
         frames.addAll(FrameController.frames);
         pages.addAll(PageController.pages);
+        vetFrameId = new Integer[frames.size()];
         contPageFaults = 0;
     }
 
@@ -68,7 +71,7 @@ public class FIFOAlgorithm {
             this.pageFaultHistoric = false;
             ageIncrement();
 
-            return responseConstructor(pageId, frameIndex, pageFaultHistoric,
+            return responseConstructor(pageId, pageFaultHistoric,
                     "Page " + pageId + " already loaded in frame " + frameIndex);
         }
 
@@ -81,7 +84,7 @@ public class FIFOAlgorithm {
 
                 ageIncrement();
 
-                return responseConstructor(pageId, frame.getId(), pageFaultHistoric,
+                return responseConstructor(pageId, pageFaultHistoric,
                         "Page " + pageId + " loaded successfully in frame " + frame.getId());
             }
         }
@@ -105,15 +108,16 @@ public class FIFOAlgorithm {
 
         ageIncrement();
 
-        return responseConstructor(pageId, frame.getId(), pageFaultHistoric,
+        return responseConstructor(pageId, pageFaultHistoric,
                 "Page " + pageId + " accessed successfully in frame " + frame.getId());
     }
 
-    private Object responseConstructor(int pageId, int frameId, boolean pageFaultHistoric, String action) {
+    private Object responseConstructor(int pageId, boolean pageFaultHistoric, String action) {
         Object[] response = new Object[4];
+        updateVetFrameId();
 
         response[0] = pageId;
-        response[1] = frameId;
+        response[1] = vetFrameId;
         response[2] = pageFaultHistoric;
         response[3] = action;
 
@@ -123,5 +127,15 @@ public class FIFOAlgorithm {
     private void ageIncrement() {
         frames.stream().filter(frame -> frame.getPage() != null)
                 .forEach(frame -> frame.getPage().setAge(frame.getPage().getAge() + 1));
+    }
+
+    public void updateVetFrameId() {
+        for (int i = 0; i < vetFrameId.length; i++) {
+            if (frames.get(i).getPage() != null) {
+                vetFrameId[i] = frames.get(i).getPage().getId();
+            } else {
+                vetFrameId[i] = null;
+            }
+        }
     }
 }
