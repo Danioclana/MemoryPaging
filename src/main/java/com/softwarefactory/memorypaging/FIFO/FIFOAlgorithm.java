@@ -1,65 +1,75 @@
 package com.softwarefactory.memorypaging.FIFO;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.softwarefactory.memorypaging.Page.Page;
 import com.softwarefactory.memorypaging.RAM.Frame;
-
 import com.softwarefactory.memorypaging.Page.PageController;
 import com.softwarefactory.memorypaging.RAM.FrameController;
 
 @RestController
 @RequestMapping("/fifo")
 public class FIFOAlgorithm {
-    int contPageFaults;
-    boolean pageFaultHistoric;
+    private int contPageFaults;
+    private boolean pageFaultHistoric;
+    private FrameController frameController = new FrameController();
+    private PageController pageController = new PageController();
+    private List<Frame> frames = new ArrayList<>();
+    private List<Page> pages = new ArrayList<>();
 
-    FrameController frameController = new FrameController();
-    PageController pageController = new PageController();
+    @PostMapping("/acessPages")
+    public ResponseEntity<List<Object>> FIFO_acessPages(@RequestBody int[] pagesId) {
+        List<Object> response = new ArrayList<>();
 
-    ArrayList<Frame> frames = new ArrayList<>();
-    ArrayList<Page> pages = new ArrayList<>();
-
-    @PostMapping("/init")
-    public ResponseEntity<?> FIFO_init() {
-
-        frames.addAll(FrameController.frames);
-        if (frames.size() == 0) {
-            return ResponseEntity.status(404).body("RAM not found");
-        }
-        pages.addAll(PageController.pages);
-        if (pages.size() == 0) {
-            return ResponseEntity.status(404).body("Pages not found");
+        FIFO_init();
+        
+        for (int pageId : pagesId) {
+            response.add(FIFO_acessPage(pageId));
         }
 
-        contPageFaults = 0;
-
-        return ResponseEntity.status(200).body("FIFO algorithm init successfully");
+        return ResponseEntity.status(200).body(response);
     }
 
-    public Object FIFO_acessPage( int pageId) {
+    @GetMapping("/getArrayFrames")
+    public ResponseEntity<List<Frame>> FIFO_getArrayFrames() {
+        return ResponseEntity.status(200).body(frames);
+    }
 
+    @GetMapping("/getFaultHistoric")
+    public ResponseEntity<Boolean> FIFO_getFaultHistoric() {
+        return ResponseEntity.status(200).body(this.pageFaultHistoric);
+    }
+
+    @GetMapping("/getContPageFaults")
+    public ResponseEntity<Integer> FIFO_getContPageFaults() {
+        return ResponseEntity.status(200).body(this.contPageFaults);
+    }
+
+    private void FIFO_init() {
+        frames.addAll(FrameController.frames);
+        pages.addAll(PageController.pages);
+        contPageFaults = 0;
+    }
+
+    private Object FIFO_acessPage(int pageId) {
         Page page = pageController.isExists(pageId);
 
         if (page == null) {
-            System.out.println("Page " + pageId + " not found");
             return ResponseEntity.status(404).body("Page " + pageId + " not found");
         }
 
-        if (frameController.findPage(pageId) != -1) {
+        int frameIndex = frameController.findPage(pageId);
+
+        if (frameIndex != -1) {
             this.pageFaultHistoric = false;
             ageIncrement();
 
-            return ResponseEntity.status(200)
-                    .body(responseConstructor(pageId, frameController.findPage(pageId), pageFaultHistoric,
-                            "Page " + pageId + " already loaded in frame " + frameController.findPage(pageId)));
+            return responseConstructor(pageId, frameIndex, pageFaultHistoric,
+                    "Page " + pageId + " already loaded in frame " + frameIndex);
         }
 
         for (Frame frame : frames) {
@@ -71,125 +81,41 @@ public class FIFOAlgorithm {
 
                 ageIncrement();
 
-                return ResponseEntity.status(200)
-                        .body(responseConstructor(pageId, frame.getId(), pageFaultHistoric,
-                                "Page " + pageId + " loaded successfully in frame " + frame.getId()));
+                return responseConstructor(pageId, frame.getId(), pageFaultHistoric,
+                        "Page " + pageId + " loaded successfully in frame " + frame.getId());
             }
         }
 
-        Page pageToRemove = frames.get(0).getPage();
+        Frame frameToRemove = frames.stream()
+                .min((f1, f2) -> Integer.compare(f1.getPage().getAge(), f2.getPage().getAge()))
+                .orElseThrow();
 
-        for (Frame frame : frames) {
-            if (frame.getPage().getAge() > pageToRemove.getAge()) {
-                pageToRemove = frame.getPage();
-            }
-        }
-
-        pageToRemove.setAge(-1);
+        frameToRemove.getPage().setAge(-1);
 
         this.contPageFaults++;
         this.pageFaultHistoric = true;
 
-        Frame frame = frameController.findFrameById(frameController.findPage(pageToRemove.getId()));
+        Frame frame = frameController.findFrameById(frameController.findPage(frameToRemove.getId()));
         frame.setPage(page);
 
         ageIncrement();
-    
-        return ResponseEntity.status(200)
-                .body(responseConstructor(pageId, pageToRemove.getId(), pageFaultHistoric,
-                        "Page " + pageId + " accessed successfully in frame " + frame.getId()));
+
+        return responseConstructor(pageId, frameToRemove.getId(), pageFaultHistoric,
+                "Page " + pageId + " accessed successfully in frame " + frame.getId());
     }
 
-    //acessos multiplos de paginas (array)
-    @PostMapping("/acessPages")
-    public ResponseEntity<?> FIFO_acessPages(@RequestBody int[] pagesId) {
-
-        ArrayList<Object> response = new ArrayList<>();
-
-        for (int i = 0; i < pagesId.length; i++) {
-            Page page = pageController.isExists(pagesId[i]);
-
-            if (page == null) {
-                System.out.println("Page " + pagesId[i] + " not found");
-                return ResponseEntity.status(404).body("Page " + pagesId[i] + " not found");
-            }
-            
-            response.add(FIFO_acessPage(pagesId[i]));
-        }
-
-        Object[] responseArray = new Object[response.size()];
-
-        for(int i = 0; i < response.size(); i++){
-            responseArray[i]=response.get(i);
-        }
-
-        return ResponseEntity.status(200).body(responseArray);
-    }
-
-    @GetMapping("/getArrayFrames")
-    public ResponseEntity<?> FIFO_getArrayFrames() {
-
-        return ResponseEntity.status(200).body(frames);
-
-    }
-
-    @GetMapping("/getFaultHistoric")
-    public ResponseEntity<?> FIFO_getFaultHistoric() {
-
-        return ResponseEntity.status(200).body(this.pageFaultHistoric);
-
-    }
-
-    @GetMapping("/getContPageFaults")
-    public ResponseEntity<?> LRU_getContPageFaults() {
-
-        return ResponseEntity.status(200).body(this.contPageFaults);
-
-    }
-
-    public Object responseConstructor(int pageId, int frameId, boolean pageFaultHistoric, String action) {
-        Object[] response = new Object[4];
-
-        response[0] = pageId;
-        response[1] = frameId;
-        response[2] = pageFaultHistoric;
-        response[3] = action;
-
+    private List<Object> responseConstructor(int pageId, int frameId, boolean pageFaultHistoric, String action) {
+        List<Object> response = new ArrayList<>();
+        response.add(pageId);
+        response.add(frameId);
+        response.add(pageFaultHistoric);
+        response.add(action);
         return response;
     }
 
-    public void ageIncrement() {
-        for(Frame frame : frames) {
-            if(frame.getPage() != null) {
-                frame.getPage().setAge(frame.getPage().getAge() + 1);
-            }
-        }
+    private void ageIncrement() {
+        frames.stream().filter(frame -> frame.getPage() != null)
+                .forEach(frame -> frame.getPage().setAge(frame.getPage().getAge() + 1));
     }
 
-/*  public static void main(String[] args) {
-        System.out.println("FIFO");
-
-        FrameController frame = new FrameController();
-        PageController page = new PageController();
-
-        frame.createFrames(3);
-        page.createPagesRandom(7);
-
-        FIFOAlgorithm fifo = new FIFOAlgorithm();
-
-        fifo.FIFO_init();
-
-        System.out.println(fifo.FIFO_acessPage(7));
-        System.out.println(fifo.FIFO_acessPage(1));
-        System.out.println(fifo.FIFO_acessPage(2));
-
-        System.out.println(fifo.FIFO_acessPage(3));
-
-        System.out.println(fifo.FIFO_acessPage(1));
-
-        System.out.println(fifo.FIFO_acessPage(4));
-
-        System.out.println(fifo.FIFO_acessPage(5));
-    }
-*/
 }

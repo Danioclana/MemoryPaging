@@ -1,14 +1,13 @@
 package com.softwarefactory.memorypaging.RAM;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import com.softwarefactory.memorypaging.FIFO.FIFOAlgorithm;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -19,22 +18,23 @@ import lombok.Setter;
 @RequestMapping("/frame")
 public class FrameController {
 
-    public static ArrayList<Frame> frames = new ArrayList<Frame>();
+    public static final ArrayList<Frame> frames = new ArrayList<>();
 
     @PostMapping("/create")
-    public ResponseEntity<?> createFrame() {
-
+    public ResponseEntity<Map<String, String>> createFrame() {
         Frame frame = new Frame();
         frame.setId(frames.size() + 1);
         frame.setPage(null);
         frames.add(frame);
 
-        return ResponseEntity.status(201).body("Frame " + frames.size() + " created successfully");
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Frame " + frames.size() + " created successfully");
+
+        return ResponseEntity.status(201).body(response);
     }
 
     @PostMapping("/createAll")
-    public ResponseEntity<?> createFrames(@RequestBody int numberOfFrames) {
-
+    public ResponseEntity<Map<String, String>> createFrames(@RequestBody int numberOfFrames) {
         frames.clear();
 
         for (int i = 0; i < numberOfFrames; i++) {
@@ -44,15 +44,19 @@ public class FrameController {
             frames.add(frame);
         }
 
-        return ResponseEntity.status(201).body(frames.size() + " frames created successfully");
+        Map<String, String> response = new HashMap<>();
+        response.put("message", frames.size() + " frames created successfully");
+
+        return ResponseEntity.status(201).body(response);
     }
 
-    @GetMapping("/getPageId")
+    @GetMapping("/getPageId/{id}")
     public ResponseEntity<?> getPageId(@PathVariable int id) {
-
         for (Frame frame : frames) {
             if (frame.getId() == id) {
-                return ResponseEntity.status(200).body(frame.getPage().getId());
+                Map<String, Integer> response = new HashMap<>();
+                response.put("pageId", frame.getPage() != null ? frame.getPage().getId() : null);
+                return ResponseEntity.status(200).body(response);
             }
         }
 
@@ -60,27 +64,29 @@ public class FrameController {
     }
 
     @GetMapping("/delete")
-    public ResponseEntity<?> deleteFrame() {
-
+    public ResponseEntity<Map<String, String>> deleteFrame() {
         frames.remove(frames.size() - 1);
 
-        return ResponseEntity.status(200).body("Frame" + frames.size() + "deleted successfully");
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Frame " + frames.size() + " deleted successfully");
+
+        return ResponseEntity.status(200).body(response);
     }
 
     @GetMapping("/deleteAll")
-    public ResponseEntity<?> deleteAllFrames() {
-
+    public ResponseEntity<Map<String, String>> deleteAllFrames() {
         frames.clear();
 
-        return ResponseEntity.status(200).body("All frames deleted successfully");
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "All frames deleted successfully");
+
+        return ResponseEntity.status(200).body(response);
     }
 
     public int findPage(int id) {
         for (Frame frame : frames) {
-            if (frame.getPage() != null) {
-                if (frame.getPage().getId() == id) {
-                    return frame.getId();
-                }
+            if (frame.getPage() != null && frame.getPage().getId() == id) {
+                return frame.getId();
             }
         }
         return -1;
@@ -95,7 +101,7 @@ public class FrameController {
         return -1;
     }
 
-    public Frame findFrameById (int id) {
+    public Frame findFrameById(int id) {
         for (Frame frame : frames) {
             if (frame.getId() == id) {
                 return frame;
@@ -103,5 +109,4 @@ public class FrameController {
         }
         return null;
     }
-
 }

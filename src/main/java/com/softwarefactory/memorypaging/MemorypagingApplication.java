@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class MemorypagingApplication {
 
-	//mvn spring-boot:run
+	// mvn spring-boot:run
 	public static void main(String[] args) {
 		SpringApplication.run(MemorypagingApplication.class, args);
 		try {
