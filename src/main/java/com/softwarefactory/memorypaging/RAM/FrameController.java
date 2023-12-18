@@ -7,8 +7,6 @@ import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.softwarefactory.memorypaging.FIFO.FIFOAlgorithm;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,7 +19,7 @@ public class FrameController {
     public static final ArrayList<Frame> frames = new ArrayList<>();
 
     @PostMapping("/create")
-    public ResponseEntity<Map<String, String>> createFrame() {
+    public ResponseEntity<Map<String, String>> createFrames() {
         Frame frame = new Frame();
         frame.setId(frames.size() + 1);
         frame.setPage(null);

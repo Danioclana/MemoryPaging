@@ -100,7 +100,7 @@ public class OptimalAlgorithm {
         frame.setPage(page);
 
         return ResponseEntity.status(200)
-                .body(responseConstructor(pageId, pageToRemove.getId(), pageFaultHistoric,
+                .body(responseConstructor(pageId, frame.getId(), pageFaultHistoric,
                         "Page " + pageId + " accessed successfully in frame " + frame.getId()));
                         
     }

@@ -100,7 +100,7 @@ public class LRUAlgorithm {
 
         //System.out.println("Page " + pageId + " accessed successfully in frame " + frames.get(0).getId());
         return ResponseEntity.status(200)
-        .body(responseConstructor(pageId, pageToRemove.getId(), pageFaultHistoric,
+        .body(responseConstructor(pageId, frame.getId(), pageFaultHistoric,
                 "Page " + pageId + " accessed successfully in frame " + frame.getId()));
     }
 
@@ -136,30 +136,4 @@ public class LRUAlgorithm {
         return response;
     } 
 
-    public static void main(String[] args) {
-        System.out.println("LRU");
-
-        FrameController frame = new FrameController();
-        PageController page = new PageController();
-
-        frame.createFrames(3);
-        page.createPagesRandom(7);
-
-        LRUAlgorithm lru = new LRUAlgorithm();
-
-        lru.LRU_init();
-
-        System.out.println(lru.LRU_acessPage(7));
-        System.out.println(lru.LRU_acessPage(1));
-        System.out.println(lru.LRU_acessPage(2));
-
-        System.out.println(lru.LRU_acessPage(3));
-
-        System.out.println(lru.LRU_acessPage(1));
-
-        System.out.println(lru.LRU_acessPage(4));
-
-        System.out.println(lru.LRU_acessPage(5));
-
-    }
 }

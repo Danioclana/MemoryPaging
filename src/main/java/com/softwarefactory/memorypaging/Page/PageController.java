@@ -7,8 +7,6 @@ import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.softwarefactory.memorypaging.FIFO.FIFOAlgorithm;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,21 +18,8 @@ public class PageController {
 
     public static final ArrayList<Page> pages = new ArrayList<>();
 
-    @PostMapping("/create")
-    public ResponseEntity<?> createPage() {
-
-        Page page = new Page();
-        page.setId(pages.size() + 1);
-        page.setAge(-1);
-        page.setTimeLastUsed(-1);
-        page.setPageRequests(0);
-        pages.add(page);
-
-        return ResponseEntity.status(200).body("Page " + pages.size() + " created successfully");
-    }
-
     @PostMapping("/createAll")
-    public ResponseEntity<Map<String, String>> createPagesRandom(@RequestBody int numberOfPages) {
+    public ResponseEntity<Map<String, String>> createPages(@RequestBody int numberOfPages) {
 
         pages.clear();
 
@@ -43,12 +28,6 @@ public class PageController {
         }
 
         return ResponseEntity.status(200).body(createResponse(pages.size() + " pages created successfully"));
-    }
-
-    @GetMapping("/delete")
-    public ResponseEntity<Map<String, String>> deletePage() {
-        pages.remove(pages.size() - 1);
-        return ResponseEntity.status(200).body(createResponse("Page deleted successfully"));
     }
 
     @GetMapping("/deleteAll")
@@ -71,7 +50,7 @@ public class PageController {
         page.setId(pages.size() + 1);
         page.setAge(-1);
         page.setTimeLastUsed(-1);
-        page.setPageRequests(0);
+        page.setFutureAcess(0);
         pages.add(page);
         return page;
     }

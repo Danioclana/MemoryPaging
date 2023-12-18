@@ -86,36 +86,42 @@ public class FIFOAlgorithm {
             }
         }
 
-        Frame frameToRemove = frames.stream()
-                .min((f1, f2) -> Integer.compare(f1.getPage().getAge(), f2.getPage().getAge()))
-                .orElseThrow();
+        Page pageToRemove = frames.get(0).getPage();
 
-        frameToRemove.getPage().setAge(-1);
+        for (Frame frame : frames) {
+            
+            if (frame.getPage().getAge() > pageToRemove.getAge()) {
+                pageToRemove = frame.getPage();
+            }
+        }
+
+        pageToRemove.setAge(-1);
 
         this.contPageFaults++;
         this.pageFaultHistoric = true;
 
-        Frame frame = frameController.findFrameById(frameController.findPage(frameToRemove.getId()));
+        Frame frame = frameController.findFrameById(frameController.findPage(pageToRemove.getId()));
         frame.setPage(page);
 
         ageIncrement();
 
-        return responseConstructor(pageId, frameToRemove.getId(), pageFaultHistoric,
+        return responseConstructor(pageId, frame.getId(), pageFaultHistoric,
                 "Page " + pageId + " accessed successfully in frame " + frame.getId());
     }
 
-    private List<Object> responseConstructor(int pageId, int frameId, boolean pageFaultHistoric, String action) {
-        List<Object> response = new ArrayList<>();
-        response.add(pageId);
-        response.add(frameId);
-        response.add(pageFaultHistoric);
-        response.add(action);
+    private Object responseConstructor(int pageId, int frameId, boolean pageFaultHistoric, String action) {
+        Object[] response = new Object[4];
+
+        response[0] = pageId;
+        response[1] = frameId;
+        response[2] = pageFaultHistoric;
+        response[3] = action;
+
         return response;
-    }
+    } 
 
     private void ageIncrement() {
         frames.stream().filter(frame -> frame.getPage() != null)
                 .forEach(frame -> frame.getPage().setAge(frame.getPage().getAge() + 1));
     }
-
 }
