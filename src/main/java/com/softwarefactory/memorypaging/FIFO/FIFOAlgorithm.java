@@ -70,7 +70,7 @@ public class FIFOAlgorithm {
         if (frameIndex != -1) {
             this.pageFaultHistoric = false;
             ageIncrement();
-
+            updateVetFrameId();
             return responseConstructor(pageId, pageFaultHistoric,
                     "Page " + pageId + " already loaded in frame " + frameIndex);
         }
@@ -83,7 +83,7 @@ public class FIFOAlgorithm {
                 this.pageFaultHistoric = true;
 
                 ageIncrement();
-
+                updateVetFrameId();
                 return responseConstructor(pageId, pageFaultHistoric,
                         "Page " + pageId + " loaded successfully in frame " + frame.getId());
             }
@@ -107,14 +107,13 @@ public class FIFOAlgorithm {
         frame.setPage(page);
 
         ageIncrement();
-
+        updateVetFrameId();
         return responseConstructor(pageId, pageFaultHistoric,
                 "Page " + pageId + " accessed successfully in frame " + frame.getId());
     }
 
     private Object responseConstructor(int pageId, boolean pageFaultHistoric, String action) {
         Object[] response = new Object[4];
-        updateVetFrameId();
 
         response[0] = pageId;
         response[1] = vetFrameId;
