@@ -50,7 +50,6 @@ public class PageController {
         page.setId(pages.size() + 1);
         page.setAge(-1);
         page.setTimeLastUsed(-1);
-        page.setFutureAcess(0);
         pages.add(page);
         return page;
     }
@@ -59,5 +58,12 @@ public class PageController {
         Map<String, String> response = new HashMap<>();
         response.put("message", message);
         return response;
+    }
+
+    public void addFutureAcess(int pageId, int futureAcess) {
+        Page page = isExists(pageId);
+        if (page != null) {
+            page.getFutureAcess().add(futureAcess);
+        }
     }
 }

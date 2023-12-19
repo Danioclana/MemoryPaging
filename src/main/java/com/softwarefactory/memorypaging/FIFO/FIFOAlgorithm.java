@@ -21,7 +21,6 @@ public class FIFOAlgorithm {
     private List<Frame> frames = new ArrayList<>();
     private List<Page> pages = new ArrayList<>();
 
-    private Integer vetFrameId[];
 
     @PostMapping("/acessPages")
     public ResponseEntity<List<Object>> FIFO_acessPages(@RequestBody int[] pagesId) {
@@ -52,9 +51,12 @@ public class FIFOAlgorithm {
     }
 
     private void FIFO_init() {
+        frames.clear();
+        pages.clear();
+
         frames.addAll(FrameController.frames);
         pages.addAll(PageController.pages);
-        vetFrameId = new Integer[frames.size()];
+
         contPageFaults = 0;
     }
 
@@ -70,9 +72,11 @@ public class FIFOAlgorithm {
         if (frameIndex != -1) {
             this.pageFaultHistoric = false;
             ageIncrement();
-            updateVetFrameId();
-            return responseConstructor(pageId, pageFaultHistoric,
-                    "Page " + pageId + " already loaded in frame " + frameIndex);
+
+            System.out.println("PÁGINA " + pageId + " JÁ ESTÁ NO QUADRO " + frameIndex);
+
+            return responseConstructor(pageId, frameController.findPage(pageId), pageFaultHistoric,
+            "PÁGINA " + pageId + " JÁ ESTÁ NO QUADRO " + frameController.findPage(pageId));
         }
 
         for (Frame frame : frames) {
@@ -83,9 +87,11 @@ public class FIFOAlgorithm {
                 this.pageFaultHistoric = true;
 
                 ageIncrement();
-                updateVetFrameId();
-                return responseConstructor(pageId, pageFaultHistoric,
-                        "Page " + pageId + " loaded successfully in frame " + frame.getId());
+
+                System.out.println("PÁGINA " + pageId + " CARREGADA NO QUADRO " + frame.getId()
+                );
+                return responseConstructor(pageId, frame.getId(), pageFaultHistoric,
+                                "PÁGINA " + pageId + " CARREGADA NO QUADRO " + frame.getId());
             }
         }
 
@@ -107,16 +113,18 @@ public class FIFOAlgorithm {
         frame.setPage(page);
 
         ageIncrement();
-        updateVetFrameId();
-        return responseConstructor(pageId, pageFaultHistoric,
-                "Page " + pageId + " accessed successfully in frame " + frame.getId());
+
+        System.out.println("PÁGINA " + pageId + " SUBSTITUI " + pageToRemove.getId() + " NO QUADRO " + frame.getId());
+
+        return responseConstructor(pageId, frame.getId(), pageFaultHistoric,
+                "PÁGINA " + pageId + " SUBSTITUI " + pageToRemove.getId() + " NO QUADRO " + frame.getId());
     }
 
-    private Object responseConstructor(int pageId, boolean pageFaultHistoric, String action) {
+    private Object responseConstructor(int pageId, int frameId, boolean pageFaultHistoric, String action) {
         Object[] response = new Object[4];
 
         response[0] = pageId;
-        response[1] = vetFrameId;
+        response[1] = frameId;
         response[2] = pageFaultHistoric;
         response[3] = action;
 
@@ -126,15 +134,5 @@ public class FIFOAlgorithm {
     private void ageIncrement() {
         frames.stream().filter(frame -> frame.getPage() != null)
                 .forEach(frame -> frame.getPage().setAge(frame.getPage().getAge() + 1));
-    }
-
-    public void updateVetFrameId() {
-        for (int i = 0; i < vetFrameId.length; i++) {
-            if (frames.get(i).getPage() != null) {
-                vetFrameId[i] = frames.get(i).getPage().getId();
-            } else {
-                vetFrameId[i] = null;
-            }
-        }
     }
 }

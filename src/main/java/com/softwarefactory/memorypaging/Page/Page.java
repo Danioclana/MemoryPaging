@@ -1,5 +1,7 @@
 package com.softwarefactory.memorypaging.Page;
 
+import java.util.ArrayList;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,9 +17,6 @@ public class Page {
 
     protected int age;
     protected int timeLastUsed;
-    protected int futureAcess;
-    public void setPageRequests(int i) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    protected ArrayList<Integer> futureAcess = new ArrayList<>();
     
 }   

@@ -16,7 +16,7 @@ import lombok.Setter;
 @RequestMapping("/frame")
 public class FrameController {
 
-    public static final ArrayList<Frame> frames = new ArrayList<>();
+    public static ArrayList<Frame> frames = new ArrayList<>();
 
     @PostMapping("/create")
     public ResponseEntity<Map<String, String>> createFrames() {
@@ -73,6 +73,7 @@ public class FrameController {
 
     @GetMapping("/deleteAll")
     public ResponseEntity<Map<String, String>> deleteAllFrames() {
+        
         frames.clear();
 
         Map<String, String> response = new HashMap<>();

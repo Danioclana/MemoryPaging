@@ -29,6 +29,9 @@ public class LRUAlgorithm {
 
     @PostMapping("/init")
     public ResponseEntity<?> LRU_init() {
+        frames.clear();
+        pages.clear();
+
         frames.addAll(FrameController.frames);
         if (frames.size() == 0) {
             return ResponseEntity.status(404).body("RAM not found");
@@ -45,14 +48,13 @@ public class LRUAlgorithm {
     }
 
     @PostMapping("/acessPage")
-    public ResponseEntity<?> LRU_acessPage(int pageId) {
+    public Object LRU_acessPage(int pageId) {
 
         time++;
 
         Page page = pageController.isExists(pageId);
 
         if (page == null) {
-            //System.out.println("Page " + pageId + " not found");
             return ResponseEntity.status(404).body("Page " + pageId + " not found");
         }
 
@@ -60,10 +62,10 @@ public class LRUAlgorithm {
             this.pageFaultHistoric = false;
             page.setTimeLastUsed(time);
 
-            //System.out.println("Page " + pageId + " already loaded in frame " + frameController.findPage(pageId));
-            return ResponseEntity.status(200)
-            .body(responseConstructor(pageId, frameController.findPage(pageId), pageFaultHistoric,
-                    "Page " + pageId + " already loaded in frame " + frameController.findPage(pageId)));
+            System.out.println("PÁGINA " + pageId + " JÁ ESTÁ NO QUADRO " + frameController.findPage(pageId));
+
+            return responseConstructor(pageId, frameController.findPage(pageId), pageFaultHistoric,
+            "PÁGINA " + pageId + " JÁ ESTÁ NO QUADRO " + frameController.findPage(pageId));
         }
 
         for (Frame frame : frames) {
@@ -74,10 +76,10 @@ public class LRUAlgorithm {
                 this.contPageFaults++;
                 this.pageFaultHistoric = true;
 
-                //System.out.println("Page " + pageId + " loaded successfully in frame " + frame.getId());
-                return ResponseEntity.status(200)
-                        .body(responseConstructor(pageId, frame.getId(), pageFaultHistoric,
-                                "Page " + pageId + " loaded successfully in frame " + frame.getId()));
+                System.out.println("PÁGINA " + pageId + " CARREGADA NO QUADRO " + frame.getId());
+
+                return responseConstructor(pageId, frame.getId(), pageFaultHistoric,
+                    "PÁGINA " + pageId + " CARREGADA NO QUADRO " + frame.getId());
             }
         }
 
@@ -98,10 +100,9 @@ public class LRUAlgorithm {
         Frame frame = frameController.findFrameById(frameController.findPage(pageToRemove.getId()));
         frame.setPage(page);
 
-        //System.out.println("Page " + pageId + " accessed successfully in frame " + frames.get(0).getId());
-        return ResponseEntity.status(200)
-        .body(responseConstructor(pageId, frame.getId(), pageFaultHistoric,
-                "Page " + pageId + " accessed successfully in frame " + frame.getId()));
+        System.out.println("PÁGINA " + pageId + " SUBSTITUI " + pageToRemove.getId() + " NO QUADRO " + frame.getId());
+        return responseConstructor(pageId, frame.getId(), pageFaultHistoric,
+                "PÁGINA " + pageId + " SUBSTITUI " + pageToRemove.getId() + " NO QUADRO " + frame.getId());
     }
 
     @GetMapping("/getArrayFrames")
@@ -125,7 +126,7 @@ public class LRUAlgorithm {
 
     }
 
-    public Object responseConstructor(int pageId, int frameId, boolean pageFaultHistoric, String action) {
+    private Object responseConstructor(int pageId, int frameId, boolean pageFaultHistoric, String action) {
         Object[] response = new Object[4];
 
         response[0] = pageId;

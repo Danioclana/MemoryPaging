@@ -28,10 +28,11 @@ public class OptimalAlgorithm {
     ArrayList<Frame> frames = new ArrayList<>();
     ArrayList<Page> pages = new ArrayList<>();
 
-    int[] acess;
-
     @PostMapping("/init")
     public ResponseEntity<?> Optimal_init() {
+        frames.clear();
+        pages.clear();
+
         frames.addAll(FrameController.frames);
         if (frames.size() == 0) {
             return ResponseEntity.status(404).body("RAM not found");
@@ -48,7 +49,7 @@ public class OptimalAlgorithm {
     }
 
     @PostMapping("/acessPage")
-        public ResponseEntity<?> Optimal_acessPage(int pageId) {
+    public Object Optimal_acessPage(int pageId) {
 
         time++;
 
@@ -60,33 +61,43 @@ public class OptimalAlgorithm {
 
         if (frameController.findPage(pageId) != -1) {
             this.pageFaultHistoric = false;
-            updateFutureAcessPage(pageId, time);
+            if (!page.getFutureAcess().isEmpty()) {
+                page.getFutureAcess().remove(0);
+            }
 
-            return ResponseEntity.status(200)
-                    .body(responseConstructor(pageId, frameController.findPage(pageId), pageFaultHistoric,
-                            "Page " + pageId + " already loaded in frame " + frameController.findPage(pageId)));
+            System.out.println("PÁGINA " + pageId + " JÁ ESTÁ NO QUADRO " + frameController.findPage(pageId));
+
+            return responseConstructor(pageId, frameController.findPage(pageId), pageFaultHistoric,
+                            "PÁGINA " + pageId + " JÁ ESTÁ NO QUADRO " + frameController.findPage(pageId));
         }
 
         for (Frame frame : frames) {
             if (frame.getPage() == null) {
 
-                updateFutureAcessPage(pageId, time);
                 frame.setPage(page);
 
                 this.contPageFaults++;
                 this.pageFaultHistoric = true;
 
-                return ResponseEntity.status(200)
-                        .body(responseConstructor(pageId, frame.getId(), pageFaultHistoric,
-                                "Page " + pageId + " loaded successfully in frame " + frame.getId()));
+                if (!page.getFutureAcess().isEmpty()) {
+                    page.getFutureAcess().remove(0);
+                }
+
+                System.out.println("PÁGINA " + pageId + " CARREGADA NO QUADRO " + frame.getId());
+
+                return responseConstructor(pageId, frame.getId(), pageFaultHistoric,
+                                "PÁGINA " + pageId + " CARREGADA NO QUADRO " + frame.getId());
             }
         }
 
         Page pageToRemove = frames.get(0).getPage();
 
         for (Frame frame : frames) {
-
-            if (frame.getPage().getFutureAcess() < pageToRemove.getFutureAcess()) {
+            if (frame.getPage().getFutureAcess().isEmpty()) {
+                pageToRemove = frame.getPage();
+            } else if (!frame.getPage().getFutureAcess().isEmpty() 
+                    && !pageToRemove.getFutureAcess().isEmpty() 
+                        && frame.getPage().getFutureAcess().get(0) > pageToRemove.getFutureAcess().get(0) ) {
                 pageToRemove = frame.getPage();
             }
         }
@@ -94,27 +105,29 @@ public class OptimalAlgorithm {
         this.contPageFaults++;
         this.pageFaultHistoric = true;
 
-        updateFutureAcessPage(pageId, time);
-
         Frame frame = frameController.findFrameById(frameController.findPage(pageToRemove.getId()));
+
+        if (!page.getFutureAcess().isEmpty()) {
+            page.getFutureAcess().remove(0);
+        }
+
         frame.setPage(page);
 
-        return ResponseEntity.status(200)
-                .body(responseConstructor(pageId, frame.getId(), pageFaultHistoric,
-                        "Page " + pageId + " accessed successfully in frame " + frame.getId()));
-                        
+        System.out.println("PÁGINA " + pageId + " SUBSTITUI " + pageToRemove.getId() + " NO QUADRO " + frame.getId());
+
+        return responseConstructor(pageId, frame.getId(), pageFaultHistoric,
+                        "PÁGINA " + pageId + " SUBSTITUI " + pageToRemove.getId() + " NO QUADRO " + frame.getId());
+
     }
 
     @PostMapping("/acessPages")
     public ResponseEntity<?> Optimal_acessPages(@RequestBody int[] pagesId) {
 
-        acess = new int [pagesId.length];
-        for (int i = 0; i < pagesId.length; i++) {
-            acess[i] = pagesId[i];
-            updateFutureAcessPage(pagesId[i], 0);
-        }
-
         ArrayList<Object> response = new ArrayList<>();
+
+        for (int i : pagesId) {
+            updateFutureAcessPage(i, pagesId);
+        }
 
         for (int i = 0; i < pagesId.length; i++) {
             Page page = pageController.isExists(pagesId[i]);
@@ -123,19 +136,18 @@ public class OptimalAlgorithm {
                 System.out.println("Page " + pagesId[i] + " not found");
                 return ResponseEntity.status(404).body("Page " + pagesId[i] + " not found");
             }
-            
+
             response.add(Optimal_acessPage(pagesId[i]));
         }
 
         Object[] responseArray = new Object[response.size()];
-        
-        for(int i = 0; i < response.size(); i++){
-            responseArray[i]=response.get(i);
+
+        for (int i = 0; i < response.size(); i++) {
+            responseArray[i] = response.get(i);
         }
 
         return ResponseEntity.status(200).body(responseArray);
     }
-
 
     public Object responseConstructor(int pageId, int frameId, boolean pageFaultHistoric, String action) {
         Object[] response = new Object[4];
@@ -162,13 +174,21 @@ public class OptimalAlgorithm {
 
     }
 
-    public void updateFutureAcessPage(int pageId, int time) {
-        for (int i = time; i < acess.length; i++) {
-                if (acess[i] == pageId) {
-                    Page page = pageController.isExists(pageId);
-                    page.setFutureAcess(page.getFutureAcess() + 1);
-                }
+    public void updateFutureAcessPage(int pageId, int[] acess) {
+
+        Page page = pageController.isExists(pageId);
+
+        if (!page.getFutureAcess().isEmpty()) {
+            return;
         }
+
+        for (int i = 0; i < acess.length; i++) {
+            if (acess[i] == page.getId()) {
+                page.getFutureAcess().add(i + 1);
+            }
+        }
+
+        System.out.println("Future acess of page " + pageId + " = " + page.getFutureAcess());
     }
 
     @GetMapping("/getContPageFaults")
@@ -177,6 +197,5 @@ public class OptimalAlgorithm {
         return ResponseEntity.status(200).body(this.contPageFaults);
 
     }
-
 
 }
