@@ -1,10 +1,12 @@
 package com.softwarefactory.memorypaging.LRU;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -47,7 +49,20 @@ public class LRUAlgorithm {
         return ResponseEntity.status(200).body("LRU algorithm init successfully");
     }
 
-    @PostMapping("/acessPage")
+    @PostMapping("/acessPages")
+    public ResponseEntity<?> LRU_acessPages (@RequestBody int[] pagesId) {
+
+         List<Object> response = new ArrayList<>();
+
+        LRU_init();
+        
+        for (int pageId : pagesId) {
+            response.add(LRU_acessPage(pageId));
+        }
+
+        return ResponseEntity.status(200).body(response);
+    }
+
     public Object LRU_acessPage(int pageId) {
 
         time++;
@@ -136,5 +151,19 @@ public class LRUAlgorithm {
 
         return response;
     } 
+
+    /* public static void main(String[] args) {
+        LRUAlgorithm lru = new LRUAlgorithm();
+
+        PageController pageController = new PageController();
+        pageController.createPages(8);
+
+        FrameController frameController = new FrameController();
+        frameController.createFrames(3);
+        
+        lru.LRU_acessPages(new int[] { 8, 1, 2, 3, 1, 4, 1, 5, 3, 4, 1, 4, 3, 2, 3, 1, 2, 8, 1, 2 });
+
+        System.out.println("ContPageFaults: " + lru.contPageFaults);
+    }*/
 
 }

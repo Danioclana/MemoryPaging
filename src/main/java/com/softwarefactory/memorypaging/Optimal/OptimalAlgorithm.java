@@ -1,6 +1,7 @@
 package com.softwarefactory.memorypaging.Optimal;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -48,7 +49,6 @@ public class OptimalAlgorithm {
         return ResponseEntity.status(200).body("Optimal algorithm init successfully");
     }
 
-    @PostMapping("/acessPage")
     public Object Optimal_acessPage(int pageId) {
 
         time++;
@@ -123,30 +123,18 @@ public class OptimalAlgorithm {
     @PostMapping("/acessPages")
     public ResponseEntity<?> Optimal_acessPages(@RequestBody int[] pagesId) {
 
-        ArrayList<Object> response = new ArrayList<>();
+        List<Object> response = new ArrayList<>();
 
-        for (int i : pagesId) {
+        Optimal_init();
+            for (int i : pagesId) {
             updateFutureAcessPage(i, pagesId);
         }
-
-        for (int i = 0; i < pagesId.length; i++) {
-            Page page = pageController.isExists(pagesId[i]);
-
-            if (page == null) {
-                System.out.println("Page " + pagesId[i] + " not found");
-                return ResponseEntity.status(404).body("Page " + pagesId[i] + " not found");
-            }
-
-            response.add(Optimal_acessPage(pagesId[i]));
+        
+        for (int pageId : pagesId) {
+            response.add(Optimal_acessPage(pageId));
         }
 
-        Object[] responseArray = new Object[response.size()];
-
-        for (int i = 0; i < response.size(); i++) {
-            responseArray[i] = response.get(i);
-        }
-
-        return ResponseEntity.status(200).body(responseArray);
+        return ResponseEntity.status(200).body(response);
     }
 
     public Object responseConstructor(int pageId, int frameId, boolean pageFaultHistoric, String action) {
@@ -198,4 +186,18 @@ public class OptimalAlgorithm {
 
     }
 
+    /* public static void main(String[] args) {
+        OptimalAlgorithm optimal = new OptimalAlgorithm();
+
+        PageController pageController = new PageController();
+        pageController.createPages(8);
+
+        FrameController frameController = new FrameController();
+        frameController.createFrames(3);
+
+        optimal.Optimal_acessPages(new int[] { 8, 1, 2, 3, 1, 4, 1, 5, 3, 4, 1, 4, 3, 2, 3, 1, 2, 8, 1, 2 });
+
+        System.out.println("ContPageFaults: " + optimal.contPageFaults);
+
+    }*/
 }

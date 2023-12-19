@@ -135,4 +135,19 @@ public class FIFOAlgorithm {
         frames.stream().filter(frame -> frame.getPage() != null)
                 .forEach(frame -> frame.getPage().setAge(frame.getPage().getAge() + 1));
     }
+
+    /*public static void main(String[] args) {
+        FIFOAlgorithm fifo = new FIFOAlgorithm();
+
+        PageController pageController = new PageController();
+        pageController.createPages(8);
+
+        FrameController frameController = new FrameController();
+        frameController.createFrames(3);
+        
+        fifo.FIFO_acessPages(new int[] { 8, 1, 2, 3, 1, 4, 1, 5, 3, 4, 1, 4, 3, 2, 3, 1, 2, 8, 1, 2 });
+
+        System.out.println("ContPageFaults: " + fifo.contPageFaults);
+    }*/
+    
 }
