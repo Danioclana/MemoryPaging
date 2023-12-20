@@ -1,8 +1,11 @@
 package com.softwarefactory.memorypaging.Optimal;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -61,7 +64,13 @@ public class OptimalAlgorithm {
 
         time = 0;
         contPageFaults = 0;
-        return ResponseEntity.status(200).body("Inicializado com sucesso!");
+        
+         Map<String, String> response = new HashMap<>();
+        response.put("status", "ok");
+        response.put("message", "O método init foi executado com sucesso.");
+
+        // Retorna a resposta com o código HTTP 200 OK
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     public Object Optimal_acessPage(int pageId) {

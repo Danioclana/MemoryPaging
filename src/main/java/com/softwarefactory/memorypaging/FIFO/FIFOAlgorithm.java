@@ -1,11 +1,15 @@
 package com.softwarefactory.memorypaging.FIFO;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.softwarefactory.memorypaging.Page.Page;
 import com.softwarefactory.memorypaging.RAM.Frame;
 import com.softwarefactory.memorypaging.Page.PageController;
@@ -51,7 +55,13 @@ public class FIFOAlgorithm {
 
         contPageFaults = 0;
 
-        return ResponseEntity.status(200).body("Inicializado com sucesso!");
+        // Cria um mapa para representar o JSON de resposta
+        Map<String, String> response = new HashMap<>();
+        response.put("status", "ok");
+        response.put("message", "O método init foi executado com sucesso.");
+
+        // Retorna a resposta com o código HTTP 200 OK
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     private Object FIFO_acessPage(int pageId) {
