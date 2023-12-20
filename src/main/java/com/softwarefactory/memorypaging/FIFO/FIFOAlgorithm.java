@@ -87,7 +87,7 @@ public class FIFOAlgorithm {
             }
 
             return responseConstructor(pageId, quadros, pageFaultHistoric,
-                    "PÁGINA " + pageId + " JÁ ESTÁ NO QUADRO " + frameController.findPage(pageId));
+                    "PÁGINA " + pageId + " JÁ ESTÁ NO QUADRO " + frameController.findPage(pageId), contPageFaults);
         }
 
         for (Frame frame : frames) {
@@ -108,7 +108,7 @@ public class FIFOAlgorithm {
 
                 System.out.println("PÁGINA " + pageId + " CARREGADA NO QUADRO " + frame.getId());
                 return responseConstructor(pageId, quadros, pageFaultHistoric,
-                        "PÁGINA " + pageId + " CARREGADA NO QUADRO " + frame.getId());
+                        "PÁGINA " + pageId + " CARREGADA NO QUADRO " + frame.getId(), contPageFaults);
             }
         }
 
@@ -142,16 +142,17 @@ public class FIFOAlgorithm {
         System.out.println("PÁGINA " + pageId + " SUBSTITUI " + pageToRemove.getId() + " NO QUADRO " + frame.getId());
 
         return responseConstructor(pageId, quadros, pageFaultHistoric,
-                "PÁGINA " + pageId + " SUBSTITUI " + pageToRemove.getId() + " NO QUADRO " + frame.getId());
+                "PÁGINA " + pageId + " SUBSTITUI " + pageToRemove.getId() + " NO QUADRO " + frame.getId(), contPageFaults);
     }
 
-    private Object responseConstructor(int pageId, Object frameId, boolean pageFaultHistoric, String action) {
-        Object[] response = new Object[4];
+    private Object responseConstructor(int pageId, Object frameId, boolean pageFaultHistoric, String action, int contPageFaults) {
+        Object[] response = new Object[5];
 
         response[0] = pageId;
         response[1] = frameId;
         response[2] = pageFaultHistoric;
         response[3] = action;
+        response[4] = contPageFaults;
 
         return response;
     }
