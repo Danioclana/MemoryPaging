@@ -65,7 +65,7 @@ public class LRUAlgorithm {
         Page page = pageController.isExists(pageId);
 
         if (page == null) {
-            return ResponseEntity.status(404).body("Page " + pageId + " not found");
+            return null;
         }
 
         if (frameController.findPage(pageId) != -1) {
