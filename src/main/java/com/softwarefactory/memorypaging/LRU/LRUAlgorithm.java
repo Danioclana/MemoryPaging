@@ -28,21 +28,8 @@ public class LRUAlgorithm {
     PageController pageController = new PageController();
 
     ArrayList<Frame> frames = new ArrayList<>();
-    ArrayList<Page> pages = new ArrayList<>();
-    List<Integer> quadros = new ArrayList<>();
-
-    public void LRU_init() {
-        frames.clear();
-        pages.clear();
-
-        frames.addAll(FrameController.frames);
-        pages.addAll(PageController.pages);
-
-        time = 0;
-        contPageFaults = 0;
-        pageFaultHistoric = false;
-    }
-
+    ArrayList<Page> pages = new ArrayList<>();    
+    
     @PostMapping("/acessPages")
     public ResponseEntity<?> LRU_acessPages(@RequestBody int[] pagesId) {
 
@@ -55,6 +42,20 @@ public class LRUAlgorithm {
         }
 
         return ResponseEntity.status(200).body(response);
+    }
+    
+
+    public void LRU_init() {
+        frames.clear();
+        pages.clear();
+
+        frames.addAll(FrameController.frames);
+        pages.addAll(PageController.pages);
+
+        pagesIdList = new int[frames.size()];
+
+        time = 0;
+        contPageFaults = 0;
     }
 
     public Object LRU_acessPage(int pageId) {
@@ -72,9 +73,14 @@ public class LRUAlgorithm {
             page.setTimeLastUsed(time);
 
             System.out.println("PÁGINA " + pageId + " JÁ ESTÁ NO QUADRO " + frameController.findPage(pageId));
+             
+            List<Integer> quadros = new ArrayList<>();
+            for (int j = 0; j < pagesIdList.length; j++) {
+                quadros.add(pagesIdList[j]);
+            }
 
             return responseConstructor(pageId, quadros, pageFaultHistoric,
-                    "PÁGINA " + pageId + " JÁ ESTÁ NO QUADRO " + frameController.findPage(pageId));
+                    "PÁGINA " + pageId + " JÁ ESTÁ NO QUADRO " + frameController.findPage(pageId), contPageFaults);
         }
 
         for (Frame frame : frames) {
@@ -87,10 +93,15 @@ public class LRUAlgorithm {
 
                 System.out.println("PÁGINA " + pageId + " CARREGADA NO QUADRO " + frame.getId());
 
-                quadros.add(pageId);
+                LRU_pagesIdListUpdate(frame.getId(), page.getId());
+
+                List<Integer> quadros = new ArrayList<>();
+                for (int j = 0; j < pagesIdList.length; j++) {
+                    quadros.add(pagesIdList[j]);
+                }
 
                 return responseConstructor(pageId, quadros, pageFaultHistoric,
-                        "PÁGINA " + pageId + " CARREGADA NO QUADRO " + frame.getId());
+                        "PÁGINA " + pageId + " CARREGADA NO QUADRO " + frame.getId(), contPageFaults);
             }
         }
 
@@ -111,9 +122,38 @@ public class LRUAlgorithm {
         Frame frame = frameController.findFrameById(frameController.findPage(pageToRemove.getId()));
         frame.setPage(page);
 
+        LRU_pagesIdListUpdate(frame.getId(), page.getId());
+
+        List<Integer> quadros = new ArrayList<>();
+        for (int j = 0; j < pagesIdList.length; j++) {
+            quadros.add(pagesIdList[j]);
+        }
+
         System.out.println("PÁGINA " + pageId + " SUBSTITUI " + pageToRemove.getId() + " NO QUADRO " + frame.getId());
+        
         return responseConstructor(pageId, quadros, pageFaultHistoric,
-                "PÁGINA " + pageId + " SUBSTITUI " + pageToRemove.getId() + " NO QUADRO " + frame.getId());
+                "PÁGINA " + pageId + " SUBSTITUI " + pageToRemove.getId() + " NO QUADRO " + frame.getId(), contPageFaults);
+    }
+
+    private Object responseConstructor(int pageId, Object quadros, boolean pageFaultHistoric, String action, int contPageFaults) {
+        Object[] response = new Object[4];
+
+        response[0] = pageId;
+        response[1] = quadros;
+        response[2] = pageFaultHistoric;
+        response[3] = action;
+        response[4] = contPageFaults;
+
+        return response;
+    }
+
+    private void LRU_pagesIdListUpdate(int frameId, int pageId) {
+        for (int i = 0; i < frames.size(); i++) {
+            if ((i + 1) == frameId) {
+                pagesIdList[i] = pageId;
+                return;
+            }
+        }
     }
 
     @GetMapping("/getArrayFrames")
@@ -137,41 +177,20 @@ public class LRUAlgorithm {
 
     }
 
-    private Object responseConstructor(int pageId, Object quadros, boolean pageFaultHistoric, String action) {
-        Object[] response = new Object[4];
-
-        response[0] = pageId;
-        response[1] = quadros;
-        response[2] = pageFaultHistoric;
-        response[3] = action;
-
-        return response;
+    //----------------------main for test ----------------------
+    public static void main(String[] args) {
+    LRUAlgorithm lru = new LRUAlgorithm();
+     
+    PageController pageController = new PageController();
+    pageController.createPages(8);
+    
+    FrameController frameController = new FrameController();
+    frameController.createFrames(3);
+     
+    lru.LRU_acessPages(new int[] { 8, 1, 2, 3, 1, 4, 1, 5, 3, 4, 1, 4, 3, 2, 3, 1, 2, 8, 1, 2 });
+    
+    System.out.println("ContPageFaults: " + lru.contPageFaults);
     }
-
-    private void LRU_pagesIdListUpdate(int frameId, int pageId) {
-        for (int i = 0; i < frames.size(); i++) {
-            if ((i + 1) == frameId) {
-                pagesIdList[i] = pageId;
-                return;
-            }
-        }
-    }
-
-    /*
-     * public static void main(String[] args) {
-     * LRUAlgorithm lru = new LRUAlgorithm();
-     * 
-     * PageController pageController = new PageController();
-     * pageController.createPages(8);
-     * 
-     * FrameController frameController = new FrameController();
-     * frameController.createFrames(3);
-     * 
-     * lru.LRU_acessPages(new int[] { 8, 1, 2, 3, 1, 4, 1, 5, 3, 4, 1, 4, 3, 2, 3,
-     * 1, 2, 8, 1, 2 });
-     * 
-     * System.out.println("ContPageFaults: " + lru.contPageFaults);
-     * }
-     */
+    
 
 }

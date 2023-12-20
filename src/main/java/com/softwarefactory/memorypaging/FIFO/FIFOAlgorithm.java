@@ -25,6 +25,7 @@ public class FIFOAlgorithm {
 
     @PostMapping("/acessPages")
     public ResponseEntity<List<Object>> FIFO_acessPages(@RequestBody int[] pagesId) {
+        
         List<Object> response = new ArrayList<>();
 
         FIFO_init();
@@ -36,20 +37,6 @@ public class FIFOAlgorithm {
         return ResponseEntity.status(200).body(response);
     }
 
-    @GetMapping("/getArrayFrames")
-    public ResponseEntity<List<Frame>> FIFO_getArrayFrames() {
-        return ResponseEntity.status(200).body(frames);
-    }
-
-    @GetMapping("/getFaultHistoric")
-    public ResponseEntity<Boolean> FIFO_getFaultHistoric() {
-        return ResponseEntity.status(200).body(this.pageFaultHistoric);
-    }
-
-    @GetMapping("/getContPageFaults")
-    public ResponseEntity<Integer> FIFO_getContPageFaults() {
-        return ResponseEntity.status(200).body(this.contPageFaults);
-    }
 
     private void FIFO_init() {
         frames.clear();
@@ -65,6 +52,7 @@ public class FIFOAlgorithm {
 
     private Object FIFO_acessPage(int pageId) {
         Page page = pageController.isExists(pageId);
+        
 
         if (page == null) {
             System.out.println("PÁGINA " + pageId + " NÃO EXISTE NA MEMÓRIA");
@@ -80,8 +68,8 @@ public class FIFOAlgorithm {
 
             System.out.println("PÁGINA " + pageId + " JÁ ESTÁ NO QUADRO " + frameIndex);
 
+            
             List<Integer> quadros = new ArrayList<>();
-
             for (int j = 0; j < pagesIdList.length; j++) {
                 quadros.add(pagesIdList[j]);
             }
@@ -163,6 +151,7 @@ public class FIFOAlgorithm {
         for (int i = 0; i < frames.size(); i++) {
             if ((i + 1) == frameId) {
                 pagesIdList[i] = pageId;
+                System.out.println("pagesIdList[" + i + "] = " + pageId);
                 return;
             }
         }
@@ -173,6 +162,23 @@ public class FIFOAlgorithm {
                 .forEach(frame -> frame.getPage().setAge(frame.getPage().getAge() + 1));
     }
 
+
+    @GetMapping("/getArrayFrames")
+    public ResponseEntity<List<Frame>> FIFO_getArrayFrames() {
+        return ResponseEntity.status(200).body(frames);
+    }
+
+    @GetMapping("/getFaultHistoric")
+    public ResponseEntity<Boolean> FIFO_getFaultHistoric() {
+        return ResponseEntity.status(200).body(this.pageFaultHistoric);
+    }
+
+    @GetMapping("/getContPageFaults")
+    public ResponseEntity<Integer> FIFO_getContPageFaults() {
+        return ResponseEntity.status(200).body(this.contPageFaults);
+    }
+
+    //----------------------main for test ----------------------
     public static void main(String[] args) {
         FIFOAlgorithm fifo = new FIFOAlgorithm();
 
