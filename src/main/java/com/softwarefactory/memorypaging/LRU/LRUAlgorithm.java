@@ -136,7 +136,7 @@ public class LRUAlgorithm {
     }
 
     private Object responseConstructor(int pageId, Object quadros, boolean pageFaultHistoric, String action, int contPageFaults) {
-        Object[] response = new Object[4];
+        Object[] response = new Object[5];
 
         response[0] = pageId;
         response[1] = quadros;
