@@ -36,7 +36,7 @@ public class OptimalAlgorithm {
 
         List<Object> response = new ArrayList<>();
 
-        Optimal_init();
+        //Optimal_init();
 
         for (int i : pagesId) {
             updateFutureAcessPage(i, pagesId);
@@ -49,7 +49,8 @@ public class OptimalAlgorithm {
         return ResponseEntity.status(200).body(response);
     }
 
-    public void Optimal_init() {
+    @GetMapping("/init")
+    public ResponseEntity<?> Optimal_init() {
         frames.clear();
         pages.clear();
 
@@ -60,7 +61,7 @@ public class OptimalAlgorithm {
 
         time = 0;
         contPageFaults = 0;
-
+        return ResponseEntity.status(200).body("Inicializado com sucesso!");
     }
 
     public Object Optimal_acessPage(int pageId) {
@@ -219,6 +220,8 @@ public class OptimalAlgorithm {
 
         FrameController frameController = new FrameController();
         frameController.createFrames(3);
+
+        optimal.Optimal_init();
 
         optimal.Optimal_acessPages(new int[] { 8, 1, 2, 3, 1, 4, 1, 5, 3, 4, 1, 4, 3, 2, 3, 1, 2, 8, 1, 2 });
 

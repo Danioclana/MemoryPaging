@@ -29,7 +29,7 @@ public class FIFOAlgorithm {
         
         List<Object> response = new ArrayList<>();
 
-        FIFO_init();
+        //FIFO_init();
 
         for (int pageId : pagesId) {
             response.add(FIFO_acessPage(pageId));
@@ -39,7 +39,8 @@ public class FIFOAlgorithm {
     }
 
 
-    private void FIFO_init() {
+    @GetMapping("/init")
+    private ResponseEntity<?> FIFO_init() {
         frames.clear();
         pages.clear();
 
@@ -49,6 +50,8 @@ public class FIFOAlgorithm {
         pagesIdList = new int[frames.size()];
 
         contPageFaults = 0;
+
+        return ResponseEntity.status(200).body("Inicializado com sucesso!");
     }
 
     private Object FIFO_acessPage(int pageId) {
@@ -152,7 +155,6 @@ public class FIFOAlgorithm {
         for (int i = 0; i < frames.size(); i++) {
             if ((i + 1) == frameId) {
                 pagesIdList[i] = pageId;
-                System.out.println("pagesIdList[" + i + "] = " + pageId);
                 return;
             }
         }
@@ -188,6 +190,8 @@ public class FIFOAlgorithm {
 
         FrameController frameController = new FrameController();
         frameController.createFrames(3);
+
+        fifo.FIFO_init();
 
         fifo.FIFO_acessPages(new int[] { 8, 1, 2, 3, 1, 4, 1, 5, 3, 4, 1, 4, 3, 2, 3,
                 1, 2, 8, 1, 2 });
