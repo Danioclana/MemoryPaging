@@ -16,6 +16,7 @@ import com.softwarefactory.memorypaging.RAM.FrameController;
 public class FIFOAlgorithm {
     private int contPageFaults;
     private boolean pageFaultHistoric;
+    
     private FrameController frameController = new FrameController();
     private PageController pageController = new PageController();
     private List<Frame> frames = new ArrayList<>();

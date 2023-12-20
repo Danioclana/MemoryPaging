@@ -22,13 +22,13 @@ public class LRUAlgorithm {
     int time;
     int contPageFaults;
     boolean pageFaultHistoric;
-    private int[] pagesIdList;
 
     FrameController frameController = new FrameController();
     PageController pageController = new PageController();
-
     ArrayList<Frame> frames = new ArrayList<>();
     ArrayList<Page> pages = new ArrayList<>();    
+    
+    private int[] pagesIdList;
     
     @PostMapping("/acessPages")
     public ResponseEntity<?> LRU_acessPages(@RequestBody int[] pagesId) {
