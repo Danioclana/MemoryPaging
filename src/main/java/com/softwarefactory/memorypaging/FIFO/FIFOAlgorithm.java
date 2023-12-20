@@ -142,10 +142,12 @@ public class FIFOAlgorithm {
         System.out.println("PÁGINA " + pageId + " SUBSTITUI " + pageToRemove.getId() + " NO QUADRO " + frame.getId());
 
         return responseConstructor(pageId, quadros, pageFaultHistoric,
-                "PÁGINA " + pageId + " SUBSTITUI " + pageToRemove.getId() + " NO QUADRO " + frame.getId(), contPageFaults);
+                "PÁGINA " + pageId + " SUBSTITUI " + pageToRemove.getId() + " NO QUADRO " + frame.getId(),
+                contPageFaults);
     }
 
-    private Object responseConstructor(int pageId, Object frameId, boolean pageFaultHistoric, String action, int contPageFaults) {
+    private Object responseConstructor(int pageId, Object frameId, boolean pageFaultHistoric, String action,
+            int contPageFaults) {
         Object[] response = new Object[5];
 
         response[0] = pageId;
